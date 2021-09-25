@@ -75,7 +75,7 @@ class RawGestureDetectorWidget extends StatelessWidget {
     return RawGestureDetector(
       gestures: _gestures,
       child: Container(
-        color: Global.blue,
+        color: Colors.white,
         child: Transform(
           alignment: _alignment,
           transform: _transform,

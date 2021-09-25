@@ -26,7 +26,7 @@ dependencies:
   provider: ^5.0.0
   firebase_core: ^1.1.1
   firebase_database: ^6.1.2
-  firebase_auth: ^1.2.0
+  firebase_auth: ^1.4.1
   flutter_barcode_scanner: ^2.0.0
   curved_navigation_bar: ^0.3.7
   google_fonts: ^2.1.0
@@ -41,6 +41,10 @@ dependencies:
   fluttertoast: ^8.0.7
   geolocator: ^7.0.3 #to get location
   geocoder: ^0.2.1 #to get address
+  particles: ^0.0.3
+  simple_animations: ^3.1.1
+  animated_background: ^2.0.0
+  carousel_slider: ^4.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -67,6 +71,14 @@ flutter:
     - assets/images/first.png
     - assets/gif/addcart.gif
     - assets/gif/points.gif
+    - assets/gif/pin.gif
+    - assets/gif/about.gif
+    - assets/gif/qrbar.gif
+    - assets/gif/verify.gif
+    - assets/gif/loc.gif
+    - assets/images/kitkat.jpeg
+    - assets/images/lbr.jpg
+    - assets/images/lqr.jpg
     - assets/img/tile_01.png
     - assets/img/tile_02.png
     - assets/img/tile_03.png

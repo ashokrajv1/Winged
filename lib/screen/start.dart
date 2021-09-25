@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +9,9 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:winged/screen/building.dart';
 import 'package:winged/screen/building_screen.dart';
+import 'package:winged/screen/login.dart';
 import 'cart_items.dart';
+import 'home.dart';
 import 'qr.dart';
 
 class Start extends StatefulWidget {
@@ -25,13 +28,108 @@ class _StartState extends State<Start> {
   _StartState(this.num);
   final db = FirebaseFirestore.instance;
   final storage = FirebaseStorage.instance;
-  final tabs = [
-    Center(
-      child: Text('Home'),
-    ),
-    Qr(),
-    cart()
-  ];
+  final tabs = [home(), Qr(), cart()];
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _signOut() async {
+    await _auth.signOut();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => login()));
+  }
+
+  void showdialog1() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+            child: (Dialog(
+              insetPadding:
+                  EdgeInsets.only(top: 100, bottom: 20, left: 30, right: 30),
+              backgroundColor: HexColor("#30C591"),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              child: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: 100, bottom: 16, left: 16, right: 16),
+                    margin: EdgeInsets.only(top: 50),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(17),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10.0,
+                              offset: Offset(0.0, 10.0))
+                        ]),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 60.0),
+                        Text(
+                          'About Us',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: HexColor("#30C591"),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(
+                          "ASHOK RAJ V \n19mx101@psgtech.ac.in\n",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: HexColor('#036f7f'),
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(
+                          "VISHNUBALAJI R K\n19mx126@psgtech.ac.in",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: HexColor('#036f7f'),
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 25.0),
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text('close'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: HexColor("#30C591"),
+                                  onPrimary: Colors.white),
+                            )),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                      top: 10,
+                      left: 16,
+                      right: 16,
+                      child: CircleAvatar(
+                        //backgroundColor: Colors.lightBlueAccent,
+                        radius: 80.0,
+                        backgroundImage: AssetImage('assets/gif/about.gif'),
+                      ))
+                ],
+              ),
+            )),
+          );
+        });
+  }
+
   void showdialog(String points) {
     showDialog(
         context: context,
@@ -125,47 +223,65 @@ class _StartState extends State<Start> {
                 return new Container(child: Text('loading...'));
               return Drawer(
                 elevation: 20,
-                child: Column(
-                  children: <Widget>[
-                    UserAccountsDrawerHeader(
-                      accountName: Text(snapshot.data.docs[0]['name']),
-                      accountEmail: Text(snapshot.data.docs[0]['mobile']),
-                      decoration: BoxDecoration(
-                        color: Colors.lightBlueAccent,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      UserAccountsDrawerHeader(
+                        accountName: Text(
+                          snapshot.data.docs[0]['name'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontStyle: FontStyle.italic,
+                              letterSpacing: 2,
+                              fontSize: 20),
+                        ),
+                        accountEmail: Text(snapshot.data.docs[0]['mobile']),
+                        decoration: BoxDecoration(
+                          color: HexColor('#036f7f'),
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: Text('Winged Points'),
-                      leading: Icon(Icons.score_outlined),
-                      onTap: () {
-                        showdialog(snapshot.data.docs[0]['points']);
-                      },
-                    ),
-                    Divider(
-                      height: 0.1,
-                    ),
-                    ListTile(
-                      title: Text('History'),
-                      leading: Icon(Icons.history),
-                    ),
-                    Divider(
-                      height: 0.1,
-                    ),
-                    ListTile(
-                      title: Text('Terms & Conditions'),
-                      leading: Icon(Icons.book_outlined),
-                    ),
-                    Divider(
-                      height: 0.1,
-                    ),
-                    ListTile(
-                      title: Text('About us'),
-                      leading: Icon(Icons.people_outline),
-                    ),
-                    Divider(
-                      height: 0.1,
-                    )
-                  ],
+                      ListTile(
+                        title: Text('Winged Points'),
+                        leading: Icon(
+                          Icons.score_outlined,
+                          color: HexColor('#036f7f'),
+                        ),
+                        onTap: () {
+                          showdialog(snapshot.data.docs[0]['points']);
+                        },
+                      ),
+                      Divider(
+                        height: 0.1,
+                      ),
+                      ListTile(
+                        title: Text('History'),
+                        leading:
+                            Icon(Icons.history, color: HexColor('#036f7f')),
+                      ),
+                      Divider(
+                        height: 0.1,
+                      ),
+                      ListTile(
+                        title: Text('Terms & Conditions'),
+                        leading: Icon(Icons.book_outlined,
+                            color: HexColor('#036f7f')),
+                      ),
+                      Divider(
+                        height: 0.1,
+                      ),
+                      ListTile(
+                        title: Text('About us'),
+                        leading: Icon(Icons.people_outline,
+                            color: HexColor('#036f7f')),
+                        onTap: () {
+                          showdialog1();
+                        },
+                      ),
+                      Divider(
+                        height: 0.1,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -174,13 +290,16 @@ class _StartState extends State<Start> {
             title: Text('Wing\'ed',
                 style: GoogleFonts.pacifico(
                     fontStyle: FontStyle.italic, fontSize: 25.0)),
-            backgroundColor: Colors.lightBlueAccent,
+            backgroundColor: HexColor('#036f7f'),
             centerTitle: true,
+            actions: [
+              IconButton(icon: Icon(Icons.logout), onPressed: _signOut)
+            ],
           ),
           backgroundColor: Colors.lightBlueAccent,
           bottomNavigationBar: CurvedNavigationBar(
             index: _currentIndex,
-            backgroundColor: Colors.lightBlueAccent,
+            backgroundColor: HexColor('#036f7f'),
             items: <Widget>[
               Icon(Icons.list, size: 30),
               Icon(Icons.qr_code, size: 25),
@@ -199,7 +318,8 @@ class _StartState extends State<Start> {
           ),
           body: tabs[_currentIndex],
           floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.home_outlined),
+            backgroundColor: HexColor('#036f7f'),
+            child: Icon(Icons.map_rounded),
             onPressed: () {
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => BuildingScreen()));

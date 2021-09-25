@@ -1,18 +1,27 @@
 {
   "project_info": {
     "project_number": "977272129175",
+    "firebase_url": "https://winged-5ac5d-default-rtdb.firebaseio.com",
     "project_id": "winged-5ac5d",
     "storage_bucket": "winged-5ac5d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:977272129175:android:094a573f79d9ef93524bd2",
+        "mobilesdk_app_id": "1:977272129175:android:669684e6ba6f184d524bd2",
         "android_client_info": {
           "package_name": "com.example.winged"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "977272129175-39l4j8pvlt2cuhid4bpabto38vjglqeb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.winged",
+            "certificate_hash": "a6ad5736d546cf5ca63743049e48cd4e1ab11486"
+          }
+        },
         {
           "client_id": "977272129175-h36vorenv243ls870eipun9v7egmbqgf.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +38,13 @@
             {
               "client_id": "977272129175-h36vorenv243ls870eipun9v7egmbqgf.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "977272129175-peg05koml0p6ond01pf70e1mhdjtas77.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.winged"
+              }
             }
           ]
         }

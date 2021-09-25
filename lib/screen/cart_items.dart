@@ -4,6 +4,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:number_inc_dec/number_inc_dec.dart';
 
+import 'checkout.dart';
+
 class cart extends StatefulWidget {
   const cart({Key key}) : super(key: key);
 
@@ -177,10 +179,11 @@ class _cartState extends State<cart> {
                                 tileColor: Colors.white10,
                                 title: Text(
                                   'Product : ' + ds['Product_code'],
-                                  style: TextStyle(color: Colors.green),
+                                  style: TextStyle(color: HexColor('#036f7f')),
                                 ),
                                 subtitle: Text(
                                     'Quantity : ' + ds['quantity'].toString()),
+                                trailing: Text("Rs.20"),
                                 onTap: () {
                                   showdialog(ds['Product_code'].toString(),
                                       ds['quantity'].toString(), ds);
@@ -208,6 +211,17 @@ class _cartState extends State<cart> {
                   } else {
                     return CircularProgressIndicator();
                   }
-                })));
+                }),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.startFloat,
+            floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: HexColor('#036f7f'),
+              label: Text("Check Out"),
+              icon: Icon(Icons.arrow_forward_ios),
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => checkout()));
+              },
+            )));
   }
 }

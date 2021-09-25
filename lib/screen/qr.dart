@@ -4,9 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:number_inc_dec/number_inc_dec.dart';
 import 'package:winged/screen/cart_items.dart';
 import 'package:hexcolor/hexcolor.dart';
+
+double distance = 201;
+double lati = 11.2778116;
+double longi = 77.1678508;
+var loc = "";
 
 class Qr extends StatefulWidget {
   const Qr({Key key}) : super(key: key);
@@ -20,12 +27,12 @@ class _QrState extends State<Qr> {
   int quantity = 1;
   final db = FirebaseFirestore.instance;
   FToast fToast;
-
   @override
   void initState() {
     super.initState();
     fToast = FToast();
     fToast.init(context);
+    getCurrentLocation();
   }
 
   _showToast(num val) {
@@ -58,6 +65,45 @@ class _QrState extends State<Qr> {
     );
   }
 
+  _showLocError() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          "Location Access Failed!!!",
+          style: TextStyle(color: HexColor('#036f7f')),
+        ),
+        content: Text("Please allow location services for this Application"),
+        actions: <Widget>[
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: HexColor('#036f7f'), // background
+            ),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Text("Close"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void getCurrentLocation() async {
+    //await Future.delayed(const Duration(seconds: 2), () {});
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() async {
+      loc = "$position";
+      //final coordinates =new Coordinates(position.latitude, position.longitude);
+      //var add = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      //var first = add.first;
+      //String address = first.featureName.toString();
+      distance = Geolocator.distanceBetween(
+          lati, longi, position.latitude, position.longitude);
+    });
+  }
+
   Future<void> scanQR() async {
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -71,8 +117,10 @@ class _QrState extends State<Qr> {
     if (!mounted) return;
 
     setState(() {
-      _scanBarcode = barcodeScanRes;
-      showdialog();
+      if (barcodeScanRes != "-1") {
+        _scanBarcode = barcodeScanRes;
+        showdialog();
+      }
     });
   }
 
@@ -90,8 +138,10 @@ class _QrState extends State<Qr> {
 
     if (!mounted) return;
     setState(() {
-      _scanBarcode = barcodeScanRes;
-      showdialog();
+      if (barcodeScanRes != "-1") {
+        _scanBarcode = barcodeScanRes;
+        showdialog();
+      }
     });
   }
 
@@ -270,37 +320,146 @@ class _QrState extends State<Qr> {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          body: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          scanBarcodeNormal();
-                        },
-                        child: Text('Barcode Scan')),
-                    ElevatedButton(
-                        onPressed: () => scanQR(), child: Text(' QR  Scan')),
-                  ],
-                ),
-                SizedBox(height: 24),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.label_important,
-                      color: Colors.redAccent,
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: SafeArea(
+              child: Column(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30.0, left: 10.0),
+                    child: Container(
+                      //color: Colors.green,
+                      height: 200,
+                      width: 280,
+                      child: Column(
+                        children: <Widget>[
+                          Center(
+                            child: Text(
+                              'you\'re awesome!\nJust tap below to scan \nthe products in your hand',
+                              style: GoogleFonts.lato(
+                                  textStyle:
+                                      TextStyle(color: HexColor('#036f7f')),
+                                  fontStyle: FontStyle.italic,
+                                  wordSpacing: 3,
+                                  fontSize: 25.0),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text('if Barcode/Qrcode not recognized click here',
-                        style: TextStyle(color: Colors.redAccent)),
-                  ],
-                ),
-              ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          GestureDetector(
+                            child: Container(
+                              width: 120.00,
+                              height: 120.00,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage('assets/images/lbr.jpg'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  border: Border.all(
+                                      color: HexColor('#036f7f'), width: 5)),
+                            ),
+                            onTap: () {
+                              if (distance <= 200)
+                                scanBarcodeNormal();
+                              else
+                                _showLocError();
+                            },
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: HexColor('#036f7f'), // background
+                              ),
+                              onPressed: () {
+                                if (distance <= 200)
+                                  scanBarcodeNormal();
+                                else
+                                  _showLocError();
+                              },
+                              child: Text('Barcode Scan')),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          GestureDetector(
+                              child: Container(
+                                width: 120.00,
+                                height: 120.00,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image:
+                                          AssetImage('assets/images/lqr.jpg'),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    border: Border.all(
+                                        color: HexColor('#036f7f'), width: 5)),
+                              ),
+                              onTap: () {
+                                if (distance <= 200)
+                                  scanQR();
+                                else
+                                  _showLocError();
+                              }),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: HexColor('#036f7f'), // background
+                              ),
+                              onPressed: () {
+                                if (distance <= 200)
+                                  scanQR();
+                                else
+                                  _showLocError();
+                              },
+                              child: Text('     QR  Scan     ')),
+                        ],
+                      )
+                    ],
+                  ),
+                  /*Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.label_important,
+                        color: HexColor('#036f7f'),
+                      ),
+                      Text(' if Barcode/Qrcode not recognized click here',
+                          style: TextStyle(color: HexColor('#036f7f'))),
+                    ],
+                  ),*/
+                  SizedBox(height: 110),
+                  Container(
+                    height: 100,
+                    width: 140,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/gif/loc.gif'),
+                        fit: BoxFit.fill,
+                      ),
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  /*Text(
+                    (distance <= 200)
+                        ? "Valid Location" + distance.toString() + loc
+                        : "Invalid Location" + distance.toString() + loc,
+                    style: TextStyle(color: Colors.green),
+                  ),*/
+                ],
+              ),
             ),
           ),
         ));

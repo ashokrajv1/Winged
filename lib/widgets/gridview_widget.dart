@@ -27,7 +27,7 @@ class GridViewWidget extends StatelessWidget {
           alignment: Alignment.center,
           children: <Widget>[
             Container(
-              color: Global.blue,
+              color: Colors.white,
               child: Image.asset(
                 'assets/img/tile_0$currentTile.png',
               ),

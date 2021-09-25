@@ -27,7 +27,7 @@ class Building extends StatelessWidget {
           topRight: Radius.circular(40),
         ),
         child: Container(
-          color: Global.blue,
+          color: Colors.white,
           child: Center(
             child: Stack(
               alignment: Alignment.center,

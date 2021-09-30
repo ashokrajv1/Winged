@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -13,8 +15,20 @@ class cart extends StatefulWidget {
   _cartState createState() => _cartState();
 }
 
+double total = 0.00;
+double t = 0;
+
 class _cartState extends State<cart> {
   final db = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    total = 0.00;
+    count = 0;
+  }
+
   void showdialog(String _scanBarcode, String quantity, DocumentSnapshot ds) {
     showDialog(
         context: context,
@@ -124,7 +138,10 @@ class _cartState extends State<cart> {
                                 db
                                     .collection('User_products')
                                     .doc(ds.id)
-                                    .update({'quantity': quantity});
+                                    .update({
+                                  'quantity': quantity,
+                                  'price': int.parse(quantity) * 10
+                                });
                                 Navigator.pop(context);
                               },
                               child: Text('EDIT'),
@@ -156,68 +173,99 @@ class _cartState extends State<cart> {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-            body: StreamBuilder<QuerySnapshot>(
-                stream: db
-                    .collection('User_products')
-                    .orderBy('datetime')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                        itemCount: snapshot.data.docs.length,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot ds = snapshot.data.docs[index];
-                          return Slidable(
-                            actionPane: SlidableDrawerActionPane(),
-                            actionExtentRatio: 0.25,
-                            child: Card(
-                              elevation: 5.0,
-                              color: Colors.white,
-                              margin: EdgeInsets.only(
-                                  left: 10, right: 10, top: 4, bottom: 4),
-                              child: ListTile(
-                                tileColor: Colors.white10,
-                                title: Text(
-                                  'Product : ' + ds['Product_code'],
-                                  style: TextStyle(color: HexColor('#036f7f')),
-                                ),
-                                subtitle: Text(
-                                    'Quantity : ' + ds['quantity'].toString()),
-                                trailing: Text("Rs.20"),
-                                onTap: () {
-                                  showdialog(ds['Product_code'].toString(),
-                                      ds['quantity'].toString(), ds);
-                                },
-                              ),
-                            ),
-                            actions: [],
-                            secondaryActions: [
-                              new IconSlideAction(
-                                caption: 'Delete',
-                                color: Colors.redAccent,
-                                icon: Icons.delete,
-                                onTap: () {
-                                  db
-                                      .collection('User_products')
-                                      .doc(ds.id)
-                                      .delete();
-                                },
-                              ),
-                            ],
-                          );
-                        });
-                  } else if (snapshot.hasError) {
-                    return CircularProgressIndicator();
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                }),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "your cart of products is here! $total",
+                    style: TextStyle(color: HexColor('#036f7f'), fontSize: 15),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: db
+                            .collection('User_products')
+                            .orderBy('datetime')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return ListView.builder(
+                                itemCount: snapshot.data.docs.length,
+                                itemBuilder: (context, index) {
+                                  DocumentSnapshot ds =
+                                      snapshot.data.docs[index];
+                                  // print(ds);
+                                  total += (ds['price']).toDouble();
+                                  count++;
+                                  return Slidable(
+                                    actionPane: SlidableDrawerActionPane(),
+                                    actionExtentRatio: 0.25,
+                                    child: Card(
+                                      elevation: 5.0,
+                                      color: Colors.white,
+                                      margin: EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 4,
+                                          bottom: 4),
+                                      child: ListTile(
+                                        tileColor: Colors.white10,
+                                        title: Text(
+                                          'Product : ' + ds['Product_code'],
+                                          style: TextStyle(
+                                              color: HexColor('#036f7f')),
+                                        ),
+                                        //leading: Icon(Icons.arrow_left),
+                                        subtitle: Text('Quantity : ' +
+                                            ds['quantity'].toString()),
+                                        trailing: Text(
+                                            'Rs.' + ds['price'].toString()),
+                                        onTap: () {
+                                          showdialog(
+                                              ds['Product_code'].toString(),
+                                              ds['quantity'].toString(),
+                                              ds);
+                                        },
+                                      ),
+                                    ),
+                                    actions: [],
+                                    secondaryActions: [
+                                      new IconSlideAction(
+                                        caption: 'Delete',
+                                        color: Colors.redAccent,
+                                        icon: Icons.delete,
+                                        onTap: () {
+                                          db
+                                              .collection('User_products')
+                                              .doc(ds.id)
+                                              .delete();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                          } else if (snapshot.hasError) {
+                            return Text("");
+                          } else {
+                            return Text("");
+                          }
+                        }),
+                  ),
+                ],
+              ),
+            ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.startFloat,
             floatingActionButton: FloatingActionButton.extended(
               backgroundColor: HexColor('#036f7f'),
-              label: Text("Check Out"),
-              icon: Icon(Icons.arrow_forward_ios),
+              label: Text("Buy Now"),
+              icon: Icon(Icons.shopping_bag_outlined),
               onPressed: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) => checkout()));
@@ -225,3 +273,29 @@ class _cartState extends State<cart> {
             )));
   }
 }
+
+/*
+                  Container(
+                      padding: EdgeInsets.only(
+                          top: 10, bottom: 10, left: 16, right: 16),
+                      width: 350,
+                      height: 50,
+                      child: Text(
+                        "Total Cost:      ₹ " + total.toString(),
+                        style: TextStyle(color: Colors.white, fontSize: 26),
+                      ),
+                      decoration: BoxDecoration(
+                          color: HexColor('#036f7f'),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.all(Radius.circular(20)))),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Container(
+                      height: 2.0,
+                      width: double.infinity,
+                      color: HexColor('#036f7f'),
+                    ),
+                  ),*/

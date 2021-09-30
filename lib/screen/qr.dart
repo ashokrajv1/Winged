@@ -27,6 +27,7 @@ class _QrState extends State<Qr> {
   int quantity = 1;
   final db = FirebaseFirestore.instance;
   FToast fToast;
+
   @override
   void initState() {
     super.initState();
@@ -73,7 +74,8 @@ class _QrState extends State<Qr> {
           "Location Access Failed!!!",
           style: TextStyle(color: HexColor('#036f7f')),
         ),
-        content: Text("Please allow location services for this Application"),
+        content: Text(
+            "You're not in the place to use this application \n\n Please allow location services for this Application"),
         actions: <Widget>[
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -262,6 +264,7 @@ class _QrState extends State<Qr> {
                                     'Product_code': _scanBarcode,
                                     'name': '',
                                     'quantity': quantity,
+                                    'price': 10 * quantity,
                                     'datetime': DateTime.now()
                                   });
                                   Navigator.pop(context);
@@ -368,7 +371,7 @@ class _QrState extends State<Qr> {
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(20.0),
                                   border: Border.all(
-                                      color: HexColor('#036f7f'), width: 5)),
+                                      color: HexColor('#036f7f'), width: 2)),
                             ),
                             onTap: () {
                               if (distance <= 200)
@@ -405,7 +408,7 @@ class _QrState extends State<Qr> {
                                     shape: BoxShape.rectangle,
                                     borderRadius: BorderRadius.circular(20.0),
                                     border: Border.all(
-                                        color: HexColor('#036f7f'), width: 5)),
+                                        color: HexColor('#036f7f'), width: 2)),
                               ),
                               onTap: () {
                                 if (distance <= 200)
@@ -439,17 +442,27 @@ class _QrState extends State<Qr> {
                           style: TextStyle(color: HexColor('#036f7f'))),
                     ],
                   ),*/
-                  SizedBox(height: 110),
+                  SizedBox(height: 90),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Container(
+                      height: 2.0,
+                      width: double.infinity,
+                      color: HexColor('#036f7f'),
+                    ),
+                  ),
                   Container(
-                    height: 100,
-                    width: 140,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/gif/loc.gif'),
-                        fit: BoxFit.fill,
+                    child: Container(
+                      height: 100,
+                      width: 140,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/gif/loc.gif'),
+                          fit: BoxFit.fill,
+                        ),
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
                   /*Text(

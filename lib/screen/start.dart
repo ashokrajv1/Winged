@@ -9,6 +9,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:winged/screen/building.dart';
 import 'package:winged/screen/building_screen.dart';
+import 'package:winged/screen/history.dart';
 import 'package:winged/screen/login.dart';
 import 'cart_items.dart';
 import 'home.dart';
@@ -210,13 +211,17 @@ class _StartState extends State<Start> {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser;
+    final myUid = user.uid;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
           drawer: StreamBuilder(
             stream: db
                 .collection("Users")
-                .where('mobile', isEqualTo: num)
+                .where('userid', isEqualTo: myUid.toString())
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData)
@@ -228,7 +233,9 @@ class _StartState extends State<Start> {
                     children: <Widget>[
                       UserAccountsDrawerHeader(
                         accountName: Text(
-                          snapshot.data.docs[0]['name'],
+                          snapshot.data.docs[0]['name']
+                              .toString()
+                              .toUpperCase(),
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontStyle: FontStyle.italic,
@@ -257,6 +264,10 @@ class _StartState extends State<Start> {
                         title: Text('History'),
                         leading:
                             Icon(Icons.history, color: HexColor('#036f7f')),
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => history()));
+                        },
                       ),
                       Divider(
                         height: 0.1,

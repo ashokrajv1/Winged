@@ -68,6 +68,7 @@ class _homeState extends State<home> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: SafeArea(
             child: Column(
@@ -83,36 +84,80 @@ class _homeState extends State<home> {
                   ),
                   items: imageSliders,
                 )),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Container(
+                    height: 2.0,
+                    width: double.infinity,
+                    color: HexColor('#036f7f'),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
-                  child: Row(children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(40), // if you need this
-                        side: BorderSide(
-                          color: Colors.grey.withOpacity(0.2),
-                          width: 1,
+                  child: Row(
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(40), // if you need this
+                            side: BorderSide(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Container(
+                            //color: Colors.white,
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
+                                    fit: BoxFit.contain)),
+                            child: Text(
+                              "Kitkat    ₹10",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  fontSize: 18, color: HexColor('#036f7f')),
+                            ),
+                            alignment: Alignment(-0.2, 1.0),
+                          ),
                         ),
-                      ),
-                      child: Container(
-                        //color: Colors.white,
-                        width: 380,
-                        height: 180,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
-                                fit: BoxFit.contain)),
-                        child: Text(
-                          "Kitkat                Rs.5",
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                              fontSize: 23, color: HexColor('#036f7f')),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(40), // if you need this
+                            side: BorderSide(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Container(
+                            //color: Colors.white,
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
+                                    fit: BoxFit.contain)),
+                            child: Text(
+                              "Kitkat    ₹10",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  fontSize: 18, color: HexColor('#036f7f')),
+                            ),
+                            alignment: Alignment(-0.2, 1.0),
+                          ),
                         ),
-                        alignment: Alignment(0.0, 1.0),
-                      ),
-                    ),
-                  ]),
+                      ]),
                 ),
                 Container(
                   child: Row(children: [
@@ -135,7 +180,7 @@ class _homeState extends State<home> {
                                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
                                 fit: BoxFit.contain)),
                         child: Text(
-                          "Kitkat                Rs.10",
+                          "Kitkat     ₹10",
                           textAlign: TextAlign.end,
                           style: TextStyle(
                               fontFamily: "Hind",
@@ -148,37 +193,65 @@ class _homeState extends State<home> {
                   ]),
                 ),
                 Container(
-                  child: Row(children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(40), // if you need this
-                        side: BorderSide(
-                          color: Colors.grey.withOpacity(0.2),
-                          width: 1,
+                  child: Row(
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(40), // if you need this
+                            side: BorderSide(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Container(
+                            //color: Colors.white,
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
+                                    fit: BoxFit.contain)),
+                            child: Text(
+                              "Kitkat    ₹10",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  fontSize: 18, color: HexColor('#036f7f')),
+                            ),
+                            alignment: Alignment(-0.2, 1.0),
+                          ),
                         ),
-                      ),
-                      child: Container(
-                        //color: Colors.white,
-                        width: 380,
-                        height: 180,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
-                                fit: BoxFit.contain)),
-                        child: Text(
-                          "Kitkat                Rs.20",
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                              fontFamily: "Hind",
-                              fontSize: 23,
-                              color: HexColor('#036f7f')),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(40), // if you need this
+                            side: BorderSide(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Container(
+                            //color: Colors.white,
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrwxvFzY1AOacCoF0yiSaOeDWOv3BPy4Qsew&usqp=CAU"),
+                                    fit: BoxFit.contain)),
+                            child: Text(
+                              "Kitkat    ₹10",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  fontSize: 18, color: HexColor('#036f7f')),
+                            ),
+                            alignment: Alignment(-0.2, 1.0),
+                          ),
                         ),
-                        alignment: Alignment(0.0, 1.0),
-                      ),
-                    ),
-                  ]),
+                      ]),
                 ),
                 Container(
                     child: IconButton(

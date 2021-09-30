@@ -52,7 +52,7 @@ class GridViewWidget extends StatelessWidget {
                                 radius: 5.0,
                                 child: Center(
                                   child: Icon(
-                                    Icons.lightbulb_outline,
+                                    Icons.pin_drop,
                                     color: Global.blue,
                                     size: 7,
                                   ),
@@ -74,7 +74,7 @@ class GridViewWidget extends StatelessWidget {
                       },
                     ),
                   )
-                : CircleAvatar(
+                : /*CircleAvatar(
                     backgroundColor: Colors.white,
                     child: Text(
                       '${tileLights.length}',
@@ -82,7 +82,8 @@ class GridViewWidget extends StatelessWidget {
                         color: Global.blue,
                       ),
                     ),
-                  ),
+                  ),*/
+                Text("")
           ],
         );
       },

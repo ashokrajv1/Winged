@@ -16,6 +16,10 @@ List<DocumentSnapshot> l;
 
 class _historyState extends State<history> {
   final db = FirebaseFirestore.instance;
+  final Stream<QuerySnapshot> history = FirebaseFirestore.instance
+      .collection('History')
+      .where("id", isEqualTo: phone)
+      .snapshots();
 
   @override
   void initState() {
@@ -62,7 +66,110 @@ class _historyState extends State<history> {
             backgroundColor: HexColor('#036f7f'),
             centerTitle: true,
           ),
-          body: SafeArea(
+          body: StreamBuilder<QuerySnapshot>(
+              stream: history,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Something went wrong'));
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData) {
+                  return Center(child: Text('No History'));
+                }
+
+                Map<dynamic, dynamic> map = snapshot.data.docs.asMap();
+
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          print(map.values.toList()[index]["product"]);
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                                leading: Icon(Icons.shopping_bag_outlined),
+                                title: Text(
+                                  'Purchase on : ' +
+                                      map.values.toList()[index]["date"],
+                                ),
+                                subtitle: Text('Item(s) : ' +
+                                    map.values
+                                        .toList()[index]['items']
+                                        .toString()),
+                                trailing: Text('Rs.' +
+                                    map.values
+                                        .toList()[index]['price']
+                                        .toString())
+                                /*SizedBox(
+                                width: 50,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Product: ',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${map.values.toList()[index]["product"]}',
+                                    ),
+                                  ],
+                                ),
+                              ),*/
+                                ),
+                          );
+                        }),
+                  ],
+                );
+              }),
+        ));
+  }
+}
+/*Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: db
+                          .collection('History')
+                          .orderBy('date')
+                          .where('id', isEqualTo: phone.toString())
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds = snapshot.data.docs[index];
+                                return new Card(
+                                    elevation: 5.0,
+                                    color: Colors.white,
+                                    margin: EdgeInsets.only(
+                                        left: 10, right: 10, top: 4, bottom: 4),
+                                    child: Column(
+                                      children: [
+                                        Text('date  :  ' + ds['date']),
+                                        Text('id  :  ' + ds['id']),
+                                      ],
+                                    ));
+                              });
+                        } else if (snapshot.hasError) {
+                          return Text("");
+                        } else {
+                          return Text("");
+                        }
+                      }),
+                ),
+
+                /*SafeArea(
             child: Column(
               children: [
                 Expanded(
@@ -103,39 +210,7 @@ class _historyState extends State<history> {
                 )
               ],
             ),
-          ),
-        ));
-  }
-}
-/*Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                      stream: db
-                          .collection('History')
-                          .orderBy('date')
-                          .where('id', isEqualTo: phone.toString())
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return ListView.builder(
-                              itemCount: snapshot.data.docs.length,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot ds = snapshot.data.docs[index];
-                                return new Card(
-                                    elevation: 5.0,
-                                    color: Colors.white,
-                                    margin: EdgeInsets.only(
-                                        left: 10, right: 10, top: 4, bottom: 4),
-                                    child: Column(
-                                      children: [
-                                        Text('date  :  ' + ds['date']),
-                                        Text('id  :  ' + ds['id']),
-                                      ],
-                                    ));
-                              });
-                        } else if (snapshot.hasError) {
-                          return Text("");
-                        } else {
-                          return Text("");
-                        }
-                      }),
-                ),*/
+          ),*/
+
+
+                */

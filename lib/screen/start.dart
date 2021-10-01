@@ -254,7 +254,8 @@ class _StartState extends State<Start> {
                           color: HexColor('#036f7f'),
                         ),
                         onTap: () {
-                          showdialog(snapshot.data.docs[0]['points']);
+                          showdialog(
+                              (snapshot.data.docs[0]['points']).toString());
                         },
                       ),
                       Divider(

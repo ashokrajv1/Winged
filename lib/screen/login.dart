@@ -166,11 +166,11 @@ class _loginState extends State<login> {
                                     //addUser(phone);
 
                                     if (user != null) {
-                                      db.collection('Users').add({
+                                      db.collection('Users').doc(user.uid).set({
                                         'mobile': num,
                                         'name': name,
                                         'userid': user.uid,
-                                        'points': "0.0"
+                                        'points': 0.0
                                       });
                                       Navigator.canPop(context);
                                       Navigator.pushReplacement(

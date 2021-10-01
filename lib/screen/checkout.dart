@@ -8,6 +8,7 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 double total = 0.00;
 int count = 0;
+double points = 0.00;
 var phone = "";
 var lines = <Map>[]; // creates an empty
 
@@ -20,14 +21,15 @@ class checkout extends StatefulWidget {
 
 class _checkoutState extends State<checkout> {
   Razorpay _razorpay = Razorpay();
+  final db = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    final db = FirebaseFirestore.instance;
     count = 0;
     total = 0;
     updatetot();
+    //updatepoints();
     _razorpay = new Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
@@ -46,7 +48,7 @@ class _checkoutState extends State<checkout> {
     double t = 0;
     int c = 0;
     var p = "";
-    final db = FirebaseFirestore.instance;
+    //final db = FirebaseFirestore.instance;
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User user = auth.currentUser;
     final myUid = user.uid;
@@ -69,9 +71,30 @@ class _checkoutState extends State<checkout> {
     setState(() {
       total = t;
       count = c;
+      phone = p;
       c = 0;
       t = 0;
-      phone = p;
+    });
+  }
+
+  Future<void> updatepoints() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser;
+    final myUid = user.uid;
+    double poi;
+    await db
+        .collection("Users")
+        .where('userid', isEqualTo: myUid.toString())
+        .get()
+        .then((value) {
+      value.docs.forEach((result) {
+        poi = double.parse(result.data()['points']);
+        print(poi);
+      });
+    });
+    setState(() {
+      points = poi;
+      total = total - points;
     });
   }
 
@@ -98,6 +121,9 @@ class _checkoutState extends State<checkout> {
 
   Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
     // Do something when payment succeeds
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User user = auth.currentUser;
+    final myUid = user.uid;
     final db = FirebaseFirestore.instance;
     DateTime now = DateTime.now(); // 30/09/2021 15:54:30
     String date = now.toString().substring(0, 16);
@@ -108,7 +134,27 @@ class _checkoutState extends State<checkout> {
         //print(result.data());
       });
     });
-    db.collection("History").add({'id': phone, 'date': date, 'product': lines});
+    db.collection("History").add({
+      'id': phone,
+      'date': date,
+      'price': total,
+      'items': count,
+      'product': lines
+    });
+    if (points == 0) {
+      updatepoints();
+      updatetot();
+      db
+          .collection('Users')
+          .doc(myUid)
+          .update({'points': (points + (total * 0.01)).toString()});
+    } else {
+      updatetot();
+      db
+          .collection('Users')
+          .doc(myUid)
+          .update({'points': (total * 0.01).toString()});
+    }
     //print(l);
     print("Success");
     Navigator.pop(context);
@@ -232,7 +278,14 @@ class _checkoutState extends State<checkout> {
                           value: this.value,
                           onChanged: (bool value) {
                             setState(() {
-                              this.value = value;
+                              if (this.value == true) {
+                                points = 0.0;
+                                updatetot();
+                                this.value = false;
+                              } else {
+                                updatepoints();
+                                this.value = true;
+                              }
                             });
                           },
                         ),
@@ -250,7 +303,7 @@ class _checkoutState extends State<checkout> {
                       Container(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          "  -  Wing'ed Points cost   :",
+                          "  -  Wing'ed Points cost  (-): $points",
                           style: GoogleFonts.amiri(
                               fontStyle: FontStyle.italic, fontSize: 20.0),
                         ),

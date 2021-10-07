@@ -55,7 +55,7 @@ class _checkoutState extends State<checkout> {
     await db.collection("User_products").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         print(result.data()['price']);
-        t += (result.data()['price']).toDouble();
+        t += (result.data()['price']).toDouble() * result.data()['quantity'];
         c++;
       });
     });
@@ -156,6 +156,11 @@ class _checkoutState extends State<checkout> {
           .update({'points': (total * 0.01).toString()});
     }
     //print(l);
+    db.collection("User_products").snapshots().forEach((element) {
+      for (QueryDocumentSnapshot snapshot in element.docs) {
+        snapshot.reference.delete();
+      }
+    });
     print("Success");
     Navigator.pop(context);
   }

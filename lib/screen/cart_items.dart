@@ -29,7 +29,8 @@ class _cartState extends State<cart> {
     count = 0;
   }
 
-  void showdialog(String _scanBarcode, String quantity, DocumentSnapshot ds) {
+  void showdialog(String _scanBarcode, int quantity, DocumentSnapshot ds) {
+    num q = quantity;
     showDialog(
         context: context,
         builder: (context) {
@@ -102,17 +103,20 @@ class _cartState extends State<cart> {
                             controller: TextEditingController(),
                             incIconColor: HexColor('#30C591'),
                             decIconColor: HexColor('#30C591'),
-                            initialValue: int.parse(quantity),
+                            initialValue: q,
                             min: 1,
                             max: 20,
                             onIncrement: (num val) {
-                              quantity = val.toString();
+                              q = val;
+                              quantity = val;
                             },
                             onDecrement: (num val) {
-                              quantity = val.toString();
+                              q = val;
+                              quantity = val;
                             },
                             onSubmitted: (num val) {
-                              quantity = val.toString();
+                              q = val;
+                              quantity = val;
                             },
                             numberFieldDecoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(
@@ -140,7 +144,10 @@ class _cartState extends State<cart> {
                                     .doc(ds.id)
                                     .update({
                                   'quantity': quantity,
-                                  'price': int.parse(quantity) * 10
+                                });
+                                setState(() {
+                                  total = 0.0;
+                                  summ = 0.0;
                                 });
                                 Navigator.pop(context);
                               },
@@ -168,6 +175,7 @@ class _cartState extends State<cart> {
         });
   }
 
+  double summ = 0;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -180,7 +188,7 @@ class _cartState extends State<cart> {
                     height: 10,
                   ),
                   Text(
-                    "your cart of products is here! $total",
+                    "your cart of products is here!",
                     style: TextStyle(color: HexColor('#036f7f'), fontSize: 15),
                     textAlign: TextAlign.left,
                   ),
@@ -201,8 +209,10 @@ class _cartState extends State<cart> {
                                   DocumentSnapshot ds =
                                       snapshot.data.docs[index];
                                   // print(ds);
-                                  total += (ds['price']).toDouble();
                                   count++;
+                                  summ = ds['price'] * ds['quantity'];
+                                  total += summ;
+                                  print(summ);
                                   return Slidable(
                                     actionPane: SlidableDrawerActionPane(),
                                     actionExtentRatio: 0.25,
@@ -217,19 +227,22 @@ class _cartState extends State<cart> {
                                       child: ListTile(
                                         tileColor: Colors.white10,
                                         title: Text(
-                                          'Product : ' + ds['Product_code'],
+                                          'Product : ' +
+                                              ds['name'] +
+                                              " (" +
+                                              ds['Product_code'] +
+                                              ")",
                                           style: TextStyle(
                                               color: HexColor('#036f7f')),
                                         ),
                                         //leading: Icon(Icons.arrow_left),
                                         subtitle: Text('Quantity : ' +
                                             ds['quantity'].toString()),
-                                        trailing: Text(
-                                            'Rs.' + ds['price'].toString()),
+                                        trailing: Text('Rs.' + summ.toString()),
                                         onTap: () {
                                           showdialog(
                                               ds['Product_code'].toString(),
-                                              ds['quantity'].toString(),
+                                              ds['quantity'],
                                               ds);
                                         },
                                       ),

@@ -1,3 +1,5 @@
+// ignore_for_file: await_only_futures
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -147,7 +149,19 @@ class _QrState extends State<Qr> {
     });
   }
 
-  void showdialog() {
+  void showdialog() async {
+    double price;
+    var name;
+    await db
+        .collection('Products')
+        .where('Product_code', isEqualTo: _scanBarcode)
+        .snapshots()
+        .listen((data) {
+      price = data.docs[0]['price'];
+      name = data.docs[0]['name'];
+      print(price);
+    });
+    print(price);
     showDialog(
         context: context,
         builder: (context) {
@@ -258,13 +272,13 @@ class _QrState extends State<Qr> {
                         Align(
                             alignment: Alignment.bottomRight,
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (quantity > 0) {
-                                  db.collection('User_products').add({
+                                  await db.collection('User_products').add({
                                     'Product_code': _scanBarcode,
-                                    'name': '',
-                                    'quantity': quantity,
-                                    'price': 10 * quantity,
+                                    'name': name,
+                                    'quantity': quantity.toInt(),
+                                    'price': price,
                                     'datetime': DateTime.now()
                                   });
                                   Navigator.pop(context);

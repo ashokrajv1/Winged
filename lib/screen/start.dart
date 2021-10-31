@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:draggable_fab/draggable_fab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:winged/screen/building.dart';
 import 'package:winged/screen/building_screen.dart';
 import 'package:winged/screen/history.dart';
 import 'package:winged/screen/login.dart';
+import 'package:winged/screen/search.dart';
 import 'cart_items.dart';
 import 'home.dart';
 import 'qr.dart';
@@ -218,130 +220,164 @@ class _StartState extends State<Start> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          drawer: StreamBuilder(
-            stream: db
-                .collection("Users")
-                .where('userid', isEqualTo: myUid.toString())
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return new Container(child: Text('loading...'));
-              return Drawer(
-                elevation: 20,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      UserAccountsDrawerHeader(
-                        accountName: Text(
-                          snapshot.data.docs[0]['name']
-                              .toString()
-                              .toUpperCase(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontStyle: FontStyle.italic,
-                              letterSpacing: 2,
-                              fontSize: 20),
-                        ),
-                        accountEmail: Text(snapshot.data.docs[0]['mobile']),
-                        decoration: BoxDecoration(
-                          color: HexColor('#036f7f'),
-                        ),
+        drawer: StreamBuilder(
+          stream: db
+              .collection("Users")
+              .where('userid', isEqualTo: myUid.toString())
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData)
+              return new Container(child: Text('loading...'));
+            return Drawer(
+              elevation: 20,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    UserAccountsDrawerHeader(
+                      accountName: Text(
+                        snapshot.data.docs[0]['name'].toString().toUpperCase(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 2,
+                            fontSize: 20),
                       ),
-                      ListTile(
-                        title: Text('Winged Points'),
-                        leading: Icon(
-                          Icons.score_outlined,
-                          color: HexColor('#036f7f'),
-                        ),
-                        onTap: () {
-                          showdialog(
-                              (snapshot.data.docs[0]['points']).toString());
-                        },
+                      accountEmail: Text(snapshot.data.docs[0]['mobile']),
+                      decoration: BoxDecoration(
+                        color: HexColor('#036f7f'),
                       ),
-                      Divider(
-                        height: 0.1,
+                    ),
+                    ListTile(
+                      title: Text('Search a Product'),
+                      leading: Icon(
+                        Icons.search_rounded,
+                        color: HexColor('#036f7f'),
                       ),
-                      ListTile(
-                        title: Text('History'),
-                        leading:
-                            Icon(Icons.history, color: HexColor('#036f7f')),
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => history()));
-                        },
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Search()));
+                      },
+                    ),
+                    Divider(
+                      height: 0.1,
+                    ),
+                    ListTile(
+                      title: Text('Winged Points'),
+                      leading: Icon(
+                        Icons.score_outlined,
+                        color: HexColor('#036f7f'),
                       ),
-                      Divider(
-                        height: 0.1,
-                      ),
-                      ListTile(
-                        title: Text('Terms & Conditions'),
-                        leading: Icon(Icons.book_outlined,
-                            color: HexColor('#036f7f')),
-                      ),
-                      Divider(
-                        height: 0.1,
-                      ),
-                      ListTile(
-                        title: Text('About us'),
-                        leading: Icon(Icons.people_outline,
-                            color: HexColor('#036f7f')),
-                        onTap: () {
-                          showdialog1();
-                        },
-                      ),
-                      Divider(
-                        height: 0.1,
-                      ),
-                    ],
-                  ),
+                      onTap: () {
+                        showdialog(
+                            (snapshot.data.docs[0]['points']).toString());
+                      },
+                    ),
+                    Divider(
+                      height: 0.1,
+                    ),
+                    ListTile(
+                      title: Text('Store layout'),
+                      leading:
+                          Icon(Icons.store_rounded, color: HexColor('#036f7f')),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => BuildingScreen()));
+                      },
+                    ),
+                    Divider(
+                      height: 0.1,
+                    ),
+                    ListTile(
+                      title: Text('History'),
+                      leading: Icon(Icons.history, color: HexColor('#036f7f')),
+                      onTap: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => history()));
+                      },
+                    ),
+                    Divider(
+                      height: 0.1,
+                    ),
+                    ListTile(
+                      title: Text('Terms & Conditions'),
+                      leading:
+                          Icon(Icons.book_outlined, color: HexColor('#036f7f')),
+                    ),
+                    Divider(
+                      height: 0.1,
+                    ),
+                    ListTile(
+                      title: Text('About us'),
+                      leading: Icon(Icons.people_outline,
+                          color: HexColor('#036f7f')),
+                      onTap: () {
+                        showdialog1();
+                      },
+                    ),
+                    Divider(
+                      height: 0.1,
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
-          appBar: AppBar(
-            title: Text('Wing\'ed',
-                style: GoogleFonts.pacifico(
-                    fontStyle: FontStyle.italic, fontSize: 25.0)),
-            backgroundColor: HexColor('#036f7f'),
-            centerTitle: true,
-            actions: [
-              IconButton(icon: Icon(Icons.logout), onPressed: _signOut)
-            ],
-          ),
-          backgroundColor: Colors.lightBlueAccent,
-          bottomNavigationBar: CurvedNavigationBar(
-            index: _currentIndex,
-            backgroundColor: HexColor('#036f7f'),
-            items: <Widget>[
-              Icon(Icons.list, size: 30),
-              Icon(Icons.qr_code, size: 25),
-              Icon(Icons.shopping_cart, size: 30),
-            ],
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
+              ),
+            );
+          },
+        ),
+        appBar: AppBar(
+          title: Text('Wing\'ed',
+              style: GoogleFonts.pacifico(
+                  fontStyle: FontStyle.italic, fontSize: 25.0)),
+          backgroundColor: HexColor('#036f7f'),
+          centerTitle: true,
+          actions: [IconButton(icon: Icon(Icons.logout), onPressed: _signOut)],
+        ),
+        backgroundColor: Colors.lightBlueAccent,
+        bottomNavigationBar: CurvedNavigationBar(
+          index: _currentIndex,
+          backgroundColor: HexColor('#036f7f'),
+          items: <Widget>[
+            Icon(Icons.list, size: 30),
+            Icon(Icons.qr_code, size: 25),
+            Icon(Icons.shopping_cart, size: 30),
+          ],
+          onTap: (index) {
+            setState(() {
               _currentIndex = index;
-              /*if (index == 1) {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => Qr()));
-            }*/
-            },
-          ),
-          body: tabs[_currentIndex],
-          floatingActionButton: FloatingActionButton(
+            });
+            _currentIndex = index;
+            /*if (index == 1) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => Qr()));
+              }*/
+          },
+        ),
+        body: tabs[_currentIndex],
+        floatingActionButton: DraggableFab(
+          child: FloatingActionButton(
             backgroundColor: HexColor('#036f7f'),
             child: Icon(Icons.map_rounded),
             onPressed: () {
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => BuildingScreen()));
             },
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
 
 /*
+
+ floatingActionButton: FloatingActionButton(
+            backgroundColor: HexColor('#036f7f'),
+            child: Icon(Icons.map_rounded),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => BuildingScreen()));
+            },
+          )
+
 currentAccountPicture: GestureDetector(
                         onTap: () async {
                           final pickedFile = await picker.getImage(

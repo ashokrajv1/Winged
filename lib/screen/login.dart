@@ -173,6 +173,7 @@ class _loginState extends State<login> {
                                         'points': 0.0
                                       });
                                       Navigator.canPop(context);
+                                      Navigator.canPop(context);
                                       Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(

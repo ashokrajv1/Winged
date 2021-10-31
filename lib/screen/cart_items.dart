@@ -211,6 +211,7 @@ class _cartState extends State<cart> {
                                   // print(ds);
                                   count++;
                                   summ = ds['price'] * ds['quantity'];
+                                  summ = summ - (summ * (ds['discount'] / 100));
                                   total += summ;
                                   print(summ);
                                   return Slidable(

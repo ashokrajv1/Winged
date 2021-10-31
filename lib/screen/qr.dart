@@ -151,6 +151,7 @@ class _QrState extends State<Qr> {
 
   void showdialog() async {
     double price;
+    double discount;
     var name;
     await db
         .collection('Products')
@@ -159,6 +160,7 @@ class _QrState extends State<Qr> {
         .listen((data) {
       price = data.docs[0]['price'];
       name = data.docs[0]['name'];
+      discount = data.docs[0]['discount'];
       print(price);
     });
     print(price);
@@ -279,6 +281,7 @@ class _QrState extends State<Qr> {
                                     'name': name,
                                     'quantity': quantity.toInt(),
                                     'price': price,
+                                    'discount': discount,
                                     'datetime': DateTime.now()
                                   });
                                   Navigator.pop(context);

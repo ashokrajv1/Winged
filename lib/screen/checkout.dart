@@ -54,8 +54,14 @@ class _checkoutState extends State<checkout> {
     final myUid = user.uid;
     await db.collection("User_products").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
-        print(result.data()['price']);
-        t += (result.data()['price']).toDouble() * result.data()['quantity'];
+        //print(result.data()['price']);
+        double x =
+            ((result.data()['price']).toDouble() * result.data()['quantity']);
+        x = double.parse(
+            (x - (x * result.data()['discount'] / 100)).toStringAsFixed(2));
+        //x = x - (x * result.data()['discount'] / 100);
+
+        t += x;
         c++;
       });
     });
@@ -213,132 +219,195 @@ class _checkoutState extends State<checkout> {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 title: Text('Check Out',
-                    style: GoogleFonts.amiri(
-                        fontStyle: FontStyle.italic, fontSize: 30.0)),
+                    style: GoogleFonts.pacifico(
+                        textStyle: TextStyle(color: Colors.white),
+                        fontWeight: FontWeight.w100,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 28.0)),
                 backgroundColor: HexColor('#036f7f'),
                 centerTitle: true,
               ),
               body: SingleChildScrollView(
                 child: SafeArea(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 20,
+                  child: Column(children: [
+                    SizedBox(
+                      height: 70,
+                    ),
+                    Card(
+                      elevation: 10,
+                      shadowColor: HexColor('#036f7f'),
+                      margin: EdgeInsets.all(20),
+                      shape: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              BorderSide(color: HexColor('#036f7f'), width: 1)),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              " Summary",
+                              style: GoogleFonts.lato(
+                                  fontStyle: FontStyle.normal, fontSize: 30.0),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Container(
+                              height: 1.0,
+                              width: double.infinity,
+                              color: HexColor('#036f7f'),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    "  -  Item(s) :",
+                                    style: GoogleFonts.lato(
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 20.0),
+                                  ),
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "$count",
+                                    style: GoogleFonts.lato(
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 20.0),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ]),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    "  -  Total :",
+                                    style: GoogleFonts.lato(
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 20.0),
+                                  ),
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "   $total",
+                                    style: GoogleFonts.lato(
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 20.0),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ]),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(children: [
+                            Checkbox(
+                              activeColor: HexColor('#036f7f'),
+                              value: this.value,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  if (this.value == true) {
+                                    points = 0.0;
+                                    updatetot();
+                                    this.value = false;
+                                  } else {
+                                    updatepoints();
+                                    this.value = true;
+                                  }
+                                });
+                              },
+                            ),
+                            Text(
+                              "Use Wing'ed points",
+                              style: GoogleFonts.lato(
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 16.0,
+                                  color: HexColor('#036f7f')),
+                            ),
+                          ]),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    "  -  Wing'ed Points(-):",
+                                    style: GoogleFonts.lato(
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 20.0),
+                                  ),
+                                ),
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    "$points",
+                                    style: GoogleFonts.lato(
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 20.0),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 100,
+                                ),
+                              ]),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Container(
+                              height: 1.0,
+                              width: double.infinity,
+                              color: HexColor('#036f7f'),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              "  Total Cost        :  $total ",
+                              style: GoogleFonts.lato(
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 30.0,
+                                  color: Colors.redAccent),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          )
+                        ],
                       ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "  Items Summary",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic, fontSize: 30.0),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          height: 1.0,
-                          width: double.infinity,
-                          color: HexColor('#036f7f'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "  -  Item(s)             :   $count",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic, fontSize: 20.0),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "  -  Item(s) cost       :   $total",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic, fontSize: 20.0),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "  -  Handling cost     :   0.00",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic, fontSize: 20.0),
-                        ),
-                      ),
-                      Row(children: [
-                        Checkbox(
-                          activeColor: HexColor('#036f7f'),
-                          value: this.value,
-                          onChanged: (bool value) {
-                            setState(() {
-                              if (this.value == true) {
-                                points = 0.0;
-                                updatetot();
-                                this.value = false;
-                              } else {
-                                updatepoints();
-                                this.value = true;
-                              }
-                            });
-                          },
-                        ),
-                        Text(
-                          "Use Wing'ed points",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 20.0,
-                              color: HexColor('#036f7f')),
-                        ),
-                      ]),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "  -  Wing'ed Points cost  (-): $points",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic, fontSize: 20.0),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          height: 1.0,
-                          width: double.infinity,
-                          color: HexColor('#036f7f'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          "  Total Cost        :  $total ",
-                          style: GoogleFonts.amiri(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 30.0,
-                              color: Colors.redAccent),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ]),
                 ),
               ),
               floatingActionButton: FloatingActionButton.extended(

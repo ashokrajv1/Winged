@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -63,42 +64,264 @@ class home extends StatefulWidget {
 }
 
 class _homeState extends State<home> {
+  final db = FirebaseFirestore.instance;
+  Offset position = Offset(20.0, 20.0);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                    child: CarouselSlider(
-                  options: CarouselOptions(
-                    aspectRatio: 2.0,
-                    enlargeCenterPage: true,
-                    enableInfiniteScroll: false,
-                    initialPage: 2,
-                    autoPlay: true,
-                  ),
-                  items: imageSliders,
-                )),
-                SizedBox(
-                  height: 20,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                  child: CarouselSlider(
+                options: CarouselOptions(
+                  aspectRatio: 3.0,
+                  enlargeCenterPage: true,
+                  enableInfiniteScroll: false,
+                  initialPage: 2,
+                  autoPlay: true,
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Container(
-                    height: 2.0,
-                    width: double.infinity,
-                    color: HexColor('#036f7f'),
-                  ),
+                items: imageSliders,
+              )),
+              SizedBox(
+                height: 5,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5.0),
+                child: Container(
+                  height: 1,
+                  width: double.infinity,
+                  color: HexColor('#036f7f'),
                 ),
-                SizedBox(
-                  height: 20,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: db
+                        .collection('Products')
+                        .orderBy('datetime')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return ListView.builder(
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              DocumentSnapshot ds = snapshot.data.docs[index];
+                              return Card(
+                                elevation: 5.0,
+                                margin: EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      child: Image.network(ds["product_img"],
+                                          width: 180,
+                                          height: 90,
+                                          fit: BoxFit.fill),
+                                    ),
+                                    Column(
+                                      children: [
+                                        Container(
+                                          child: Text(ds["name"],
+                                              style: TextStyle(
+                                                  color: HexColor('#036f7f'),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600,
+                                                  letterSpacing: 2),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis),
+                                          margin: EdgeInsets.fromLTRB(
+                                              10.0, 3.0, 10.0, 0.0),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Price : " +
+                                                    ds["price"].toString(),
+                                                style: TextStyle(
+                                                    color: Colors.redAccent,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 2),
+                                              ),
+                                              SizedBox(
+                                                height: 28,
+                                                child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary: HexColor(
+                                                          '#036f7f'), // background
+                                                    ),
+                                                    onPressed: () {},
+                                                    child:
+                                                        Text(' Add to Cart ')),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  10.0, 0.0, 10.0, 8.0),
+                                              child: Text(
+                                                "Product discount(%) : " +
+                                                    ds['discount'].toString(),
+                                                style: TextStyle(
+                                                    color: HexColor('#036f7f'),
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                    letterSpacing: 1),
+                                              )),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      } else if (snapshot.hasError) {
+                        return Text("");
+                      } else {
+                        return Text("");
+                      }
+                    }),
+              ),
+              SizedBox(
+                height: 11,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/*
+
+Container(
+                  child: IconButton(
+                icon: Image.asset('assets/gif/qrbar.gif'),
+                iconSize: 300,
+                onPressed: () {},
+              ))
+
+
+Card(
+                                      elevation: 5.0,
+                                      color: Colors.white,
+                                      margin: EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 4,
+                                          bottom: 4),
+                                      child: ListTile(
+                                        tileColor: Colors.white10,
+                                        title: Text(
+                                          'Product : ' +
+                                              ds['name'] +
+                                              " (" +
+                                              ds['Product_code'] +
+                                              ")",
+                                          style: TextStyle(
+                                              color: HexColor('#036f7f')),
+                                        ),
+                                        //leading: Icon(Icons.arrow_left),
+                                        subtitle: Text('Quantity : ' +
+                                            ds['quantity'].toString()),
+                                        trailing: Text('Rs.'),
+                                        onTap: () {
+                                          // showdialog(ds['Product_code'].toString(),ds['quantity'],ds);
+                                        },
+                                      ),
+                                    );
+
+Container(
+                                  child: Card(
+                                    elevation: 5.0,
+                                    margin: EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          child: Image.network(
+                                              "https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/118898040/original/870e2763755963f5a300574bbea5977fa8b18460/sell-original-football-and-basketball-teams-jersey.jpg",
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.fill),
+                                        ),
+                                        Column(
+                                          children: [
+                                            Container(
+                                              child: Text("product",
+                                                  maxLines: 2, overflow: TextOverflow.ellipsis),
+                                              margin: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Container(
+                                                  margin:
+                                                  EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                                                  child: Text("prod")),
+                                            ),
+                                            Container(
+                                              margin: EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                                children: [Text("Price"), Text("ADD TO CART")],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+
+
+class home1 extends StatelessWidget {
+  const home1({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                  child: CarouselSlider(
+                options: CarouselOptions(
+                  aspectRatio: 2.0,
+                  enlargeCenterPage: true,
+                  enableInfiniteScroll: false,
+                  initialPage: 2,
+                  autoPlay: true,
                 ),
-                Container(
+                items: imageSliders,
+              )),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Container(
                   child: Row(
                       //crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -159,7 +382,7 @@ class _homeState extends State<home> {
                         ),
                       ]),
                 ),
-                Container(
+Container(
                   child: Row(children: [
                     Card(
                       shape: RoundedRectangleBorder(
@@ -253,47 +476,4 @@ class _homeState extends State<home> {
                         ),
                       ]),
                 ),
-                Container(
-                    child: IconButton(
-                  icon: Image.asset('assets/gif/qrbar.gif'),
-                  iconSize: 300,
-                  onPressed: () {},
-                ))
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/*class home1 extends StatelessWidget {
-  const home1({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                  child: CarouselSlider(
-                options: CarouselOptions(
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
-                  enableInfiniteScroll: false,
-                  initialPage: 2,
-                  autoPlay: true,
-                ),
-                items: imageSliders,
-              )),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}*/
+*/

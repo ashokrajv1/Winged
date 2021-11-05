@@ -200,7 +200,7 @@ class _QrState extends State<Qr> {
                         ),
                         SizedBox(height: 16.0),
                         Text(
-                          ' PRODUCT ',
+                          ' Product ',
                           style: TextStyle(
                             fontSize: 20.0,
                             //backgroundColor: HexColor("#30C591"),
@@ -219,7 +219,7 @@ class _QrState extends State<Qr> {
                           height: 12.0,
                         ),
                         Text(
-                          ' QUANTITY ',
+                          ' Quantity ',
                           style: TextStyle(
                             fontSize: 20.0,
                             //backgroundColor: HexColor("#30C591"),
@@ -275,7 +275,17 @@ class _QrState extends State<Qr> {
                             alignment: Alignment.bottomRight,
                             child: ElevatedButton(
                               onPressed: () async {
-                                if (quantity > 0) {
+                                if (name == null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Product Not Available",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      timeInSecForIosWeb: 2,
+                                      backgroundColor: Colors.greenAccent,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                  Navigator.pop(context);
+                                } else if (quantity > 0) {
                                   await db.collection('User_products').add({
                                     'Product_code': _scanBarcode,
                                     'name': name,

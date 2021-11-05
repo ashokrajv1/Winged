@@ -55,25 +55,30 @@ class _SearchState extends State<Search> {
                   itemBuilder: (context, index) {
                     final DataModel data = dataList[index];
 
-                    return ListTile(
-                      tileColor: Colors.white10,
-                      title: Text(
-                        'Product : ' + '${data.name}',
-                        style: TextStyle(color: HexColor('#036f7f')),
-                      ),
-                      //leading: Icon(Icons.arrow_left),
-                      subtitle: Text(
-                          'Available Quantity : ${data.quantity}\nDiscount(%) : ${data.discount}\n'),
-                      trailing: Text(
-                        'Rs.${data.price}',
-                        style: TextStyle(
-                            color: Colors.redAccent,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 2),
-                      ),
-                      onTap: () {},
-                    );
+                    return Card(
+                        elevation: 5.0,
+                        color: Colors.white,
+                        margin: EdgeInsets.only(
+                            left: 10, right: 10, top: 4, bottom: 4),
+                        child: ListTile(
+                          tileColor: Colors.white10,
+                          title: Text(
+                            'Product : ' + '${data.name}',
+                            style: TextStyle(color: HexColor('#036f7f')),
+                          ),
+                          //leading: Icon(Icons.arrow_left),
+                          subtitle: Text(
+                              'Available Quantity : ${data.quantity}\nDiscount(%) : ${data.discount}\n'),
+                          trailing: Text(
+                            'Rs.${data.price}',
+                            style: TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 2),
+                          ),
+                          onTap: () {},
+                        ));
                   });
             }
 

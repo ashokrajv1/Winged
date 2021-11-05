@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
               const EdgeInsets.only(left: 30, right: 30, top: 180, bottom: 30),
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/first.png'),
+              image: AssetImage(''),
               fit: BoxFit.cover,
             ),
           ),

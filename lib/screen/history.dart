@@ -49,6 +49,93 @@ class _historyState extends State<history> {
     });
   }
 
+  void showdialog() {
+    //num q = quantity;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+            child: (Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              child: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: 100, bottom: 16, left: 16, right: 16),
+                    margin: EdgeInsets.only(top: 16),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(17),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10.0,
+                              offset: Offset(0.0, 10.0))
+                        ]),
+                    child: Column(children: [
+                      StreamBuilder<QuerySnapshot>(
+                          stream: db
+                              .collection('User_products')
+                              .orderBy('datetime')
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return ListView.builder(
+                                  itemCount: snapshot.data.docs.length,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot ds =
+                                        snapshot.data.docs[index];
+                                    // print(ds);
+                                    summ = ds['price'] * ds['quantity'];
+                                    summ =
+                                        summ - (summ * (ds['discount'] / 100));
+                                    print(summ);
+                                    return Card(
+                                      elevation: 5.0,
+                                      color: Colors.white,
+                                      margin: EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 4,
+                                          bottom: 4),
+                                      child: ListTile(
+                                        tileColor: Colors.white10,
+                                        title: Text(
+                                          'Product : ' + ds['name'],
+                                          style: TextStyle(
+                                              color: HexColor('#036f7f'),
+                                              fontSize: 18),
+                                        ),
+                                        //leading: Icon(Icons.arrow_left),
+                                        subtitle: Text('Quantity : ' +
+                                            ds['quantity'].toString()),
+                                        trailing: Text(
+                                          'Rs. ' + summ.toString(),
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontSize: 20),
+                                        ),
+                                      ),
+                                    );
+                                  });
+                            } else if (snapshot.hasError) {
+                              return Text("");
+                            } else {
+                              return Text("");
+                            }
+                          }),
+                    ]),
+                  ),
+                ],
+              ),
+            )),
+          );
+        });
+  }
+
+  double summ = 0;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -99,22 +186,40 @@ class _historyState extends State<history> {
                           itemBuilder: (BuildContext context, int index) {
                             print(map.values.toList()[index]["product"]);
                             return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                  leading: Icon(Icons.shopping_bag_outlined),
-                                  title: Text(
-                                    'Purchase on : ' +
-                                        map.values.toList()[index]["date"],
+                                padding: const EdgeInsets.all(8.0),
+                                child: Card(
+                                  elevation: 5.0,
+                                  color: Colors.white,
+                                  margin: EdgeInsets.only(
+                                      left: 10, right: 10, top: 4, bottom: 4),
+                                  child: ListTile(
+                                    leading: Icon(Icons.shopping_bag_outlined),
+                                    title: Text(
+                                      'Purchase on : ' +
+                                          map.values.toList()[index]["date"],
+                                    ),
+                                    subtitle: Text('Item(s) : ' +
+                                        map.values
+                                            .toList()[index]['items']
+                                            .toString()),
+                                    trailing: Text('Rs.' +
+                                        map.values
+                                            .toList()[index]['price']
+                                            .toString()),
+                                    onTap: () {
+                                      showdialog();
+                                    },
                                   ),
-                                  subtitle: Text('Item(s) : ' +
-                                      map.values
-                                          .toList()[index]['items']
-                                          .toString()),
-                                  trailing: Text('Rs.' +
-                                      map.values
-                                          .toList()[index]['price']
-                                          .toString())
-                                  /*SizedBox(
+                                ));
+                          }),
+                    ],
+                  );
+                }),
+          ),
+        ));
+  }
+}
+/*                                                 SizedBox(
                                   width: 50,
                                   child: Row(
                                     children: [
@@ -129,18 +234,8 @@ class _historyState extends State<history> {
                                       ),
                                     ],
                                   ),
-                                ),*/
-                                  ),
-                            );
-                          }),
-                    ],
-                  );
-                }),
-          ),
-        ));
-  }
-}
-/*Expanded(
+                                ),
+                                Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                       stream: db
                           .collection('History')

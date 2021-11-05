@@ -299,14 +299,6 @@ class _StartState extends State<Start> {
                       height: 0.1,
                     ),
                     ListTile(
-                      title: Text('Terms & Conditions'),
-                      leading:
-                          Icon(Icons.book_outlined, color: HexColor('#036f7f')),
-                    ),
-                    Divider(
-                      height: 0.1,
-                    ),
-                    ListTile(
                       title: Text('About us'),
                       leading: Icon(Icons.people_outline,
                           color: HexColor('#036f7f')),

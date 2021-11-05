@@ -38,7 +38,7 @@ dependencies:
   hexcolor: ^2.0.5
   flutter_slidable: ^0.6.0
   font_awesome_flutter: ^9.0.0
-  fluttertoast: ^8.0.7
+  fluttertoast: ^7.1.8
   geolocator: ^7.0.3 #to get location
   particles: ^0.0.3
   simple_animations: ^3.1.1
@@ -70,7 +70,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/first.png
     - assets/gif/addcart.gif
     - assets/gif/points.gif
     - assets/gif/pin.gif

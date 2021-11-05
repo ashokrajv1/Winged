@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:number_inc_dec/number_inc_dec.dart';
 
 final List<String> imgList = [
   'https://cdn.dribbble.com/users/1056774/screenshots/3634302/_typography_sale_sold4-03_animation800x600.gif',
@@ -66,6 +68,223 @@ class home extends StatefulWidget {
 class _homeState extends State<home> {
   final db = FirebaseFirestore.instance;
   Offset position = Offset(20.0, 20.0);
+  int quantity = 1;
+  FToast fToast;
+
+  _showToast(num val) {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.greenAccent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.priority_high_outlined),
+          SizedBox(
+            width: 12.0,
+          ),
+          (val == 1)
+              ? Text("Minimum quality is 1")
+              : (val == 20)
+                  ? Text("Maximum quality at once is 20")
+                  : Text(""),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 2),
+    );
+  }
+
+  void showdialog(
+      String _scanBarcode, String name, double price, double discount) async {
+    print(price);
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SingleChildScrollView(
+            child: (Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              child: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: 100, bottom: 16, left: 16, right: 16),
+                    margin: EdgeInsets.only(top: 16),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(17),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10.0,
+                              offset: Offset(0.0, 10.0))
+                        ]),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Add to Cart',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: HexColor("#30C591"),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(
+                          ' Product ',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            //backgroundColor: HexColor("#30C591"),
+                            color: Colors.pinkAccent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Text(
+                          name,
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                        SizedBox(
+                          height: 12.0,
+                        ),
+                        Text(
+                          ' Quantity ',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            //backgroundColor: HexColor("#30C591"),
+                            color: Colors.pinkAccent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Container(
+                          //margin: EdgeInsets.all(0),
+                          padding: EdgeInsets.only(
+                              left: 90, top: 10, right: 90, bottom: 0),
+                          child: NumberInputPrefabbed.roundedButtons(
+                            scaleHeight: 0.9,
+                            controller: TextEditingController(),
+                            incIconColor: HexColor('#30C591'),
+                            decIconColor: HexColor('#30C591'),
+                            initialValue: 1,
+                            min: 1,
+                            max: 20,
+                            onIncrement: (num val) {
+                              quantity = val;
+                              if (val == 20) {
+                                _showToast(val);
+                              }
+                            },
+                            onDecrement: (num val) {
+                              quantity = val;
+                              if (val == 1) {
+                                _showToast(val);
+                              }
+                            },
+                            onSubmitted: (num val) {
+                              quantity = val;
+                            },
+                            numberFieldDecoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30.0)),
+                                borderSide: BorderSide(
+                                    color: HexColor('#30C591'), width: 2.0),
+                              ),
+                            ),
+                            decIconSize: 25,
+                            incIconSize: 25,
+                            buttonArrangement:
+                                ButtonArrangement.incRightDecLeft,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 24.0,
+                        ),
+                        Align(
+                            alignment: Alignment.bottomRight,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (name == null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Product Not Available",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.SNACKBAR,
+                                      timeInSecForIosWeb: 2,
+                                      backgroundColor: Colors.greenAccent,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                  Navigator.pop(context);
+                                } else if (quantity > 0) {
+                                  await db.collection('User_products').add({
+                                    'Product_code': _scanBarcode,
+                                    'name': name,
+                                    'quantity': quantity.toInt(),
+                                    'price': price,
+                                    'discount': discount,
+                                    'datetime': DateTime.now()
+                                  });
+                                  Navigator.pop(context);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: Colors.pink,
+                                      content: const Text(
+                                        'Quantity should be greater than 0',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 18),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal:
+                                            40.0, // Inner padding for SnackBar content.
+                                      ),
+                                      duration:
+                                          const Duration(milliseconds: 1500),
+                                      width: 280.0, // Width of the SnackBar.
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Text('ADD'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: HexColor("#30C591"),
+                                  onPrimary: Colors.white),
+                            )),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                      top: 2,
+                      left: 16,
+                      right: 16,
+                      child: CircleAvatar(
+                        //backgroundColor: Colors.lightBlueAccent,
+                        radius: 50.0,
+                        backgroundImage: AssetImage('assets/gif/addcart.gif'),
+                      ))
+                ],
+              ),
+            )),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,7 +300,7 @@ class _homeState extends State<home> {
                   aspectRatio: 3.0,
                   enlargeCenterPage: true,
                   enableInfiniteScroll: false,
-                  initialPage: 2,
+                  initialPage: 0,
                   autoPlay: true,
                 ),
                 items: imageSliders,
@@ -163,7 +382,13 @@ class _homeState extends State<home> {
                                                       primary: HexColor(
                                                           '#036f7f'), // background
                                                     ),
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      showdialog(
+                                                          ds["Product_code"],
+                                                          ds["name"],
+                                                          ds["price"],
+                                                          ds["discount"]);
+                                                    },
                                                     child:
                                                         Text(' Add to Cart ')),
                                               )

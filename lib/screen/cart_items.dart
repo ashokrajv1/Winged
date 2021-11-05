@@ -29,7 +29,8 @@ class _cartState extends State<cart> {
     count = 0;
   }
 
-  void showdialog(String _scanBarcode, int quantity, DocumentSnapshot ds) {
+  void showdialog(
+      String _scanBarcode, String name, int quantity, DocumentSnapshot ds) {
     num q = quantity;
     showDialog(
         context: context,
@@ -67,7 +68,7 @@ class _cartState extends State<cart> {
                         ),
                         SizedBox(height: 16.0),
                         Text(
-                          ' PRODUCT ',
+                          ' Product ',
                           style: TextStyle(
                             fontSize: 20.0,
                             //backgroundColor: HexColor("#30C591"),
@@ -79,14 +80,14 @@ class _cartState extends State<cart> {
                           height: 10.0,
                         ),
                         Text(
-                          _scanBarcode,
+                          name,
                           style: TextStyle(fontSize: 20.0),
                         ),
                         SizedBox(
                           height: 12.0,
                         ),
                         Text(
-                          ' QUANTITY ',
+                          ' Quantity ',
                           style: TextStyle(
                             fontSize: 20.0,
                             //backgroundColor: HexColor("#30C591"),
@@ -185,15 +186,7 @@ class _cartState extends State<cart> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "your cart of products is here!",
-                    style: TextStyle(color: HexColor('#036f7f'), fontSize: 15),
-                    textAlign: TextAlign.left,
-                  ),
-                  SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
@@ -228,21 +221,24 @@ class _cartState extends State<cart> {
                                       child: ListTile(
                                         tileColor: Colors.white10,
                                         title: Text(
-                                          'Product : ' +
-                                              ds['name'] +
-                                              " (" +
-                                              ds['Product_code'] +
-                                              ")",
+                                          'Product : ' + ds['name'],
                                           style: TextStyle(
-                                              color: HexColor('#036f7f')),
+                                              color: HexColor('#036f7f'),
+                                              fontSize: 18),
                                         ),
                                         //leading: Icon(Icons.arrow_left),
                                         subtitle: Text('Quantity : ' +
                                             ds['quantity'].toString()),
-                                        trailing: Text('Rs.' + summ.toString()),
+                                        trailing: Text(
+                                          'Rs. ' + summ.toString(),
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontSize: 20),
+                                        ),
                                         onTap: () {
                                           showdialog(
                                               ds['Product_code'].toString(),
+                                              ds['name'],
                                               ds['quantity'],
                                               ds);
                                         },
@@ -267,7 +263,7 @@ class _cartState extends State<cart> {
                           } else if (snapshot.hasError) {
                             return Text("");
                           } else {
-                            return Text("");
+                            return Center(child: Text("Cart is empty"));
                           }
                         }),
                   ),

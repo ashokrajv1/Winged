@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:number_inc_dec/number_inc_dec.dart';
 
@@ -70,6 +71,31 @@ class _homeState extends State<home> {
   Offset position = Offset(20.0, 20.0);
   int quantity = 1;
   FToast fToast;
+  int freq = 0;
+  bool check = false;
+
+  _countDocuments() async {
+    QuerySnapshot _myDoc = await db.collection("freq_purchase").get();
+    List myDocCount = _myDoc.docs;
+    var total = myDocCount.length;
+    print(total);
+    if (total > 0) {
+      setState(() {
+        check = true;
+      });
+    } else {
+      setState(() {
+        check = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _countDocuments();
+  }
 
   _showToast(num val) {
     Widget toast = Container(
@@ -101,8 +127,8 @@ class _homeState extends State<home> {
     );
   }
 
-  void showdialog(
-      String _scanBarcode, String name, double price, double discount) async {
+  void showdialog(String _scanBarcode, String img, String name, double price,
+      double discount) async {
     print(price);
     showDialog(
         context: context,
@@ -228,6 +254,7 @@ class _homeState extends State<home> {
                                 } else if (quantity > 0) {
                                   await db.collection('User_products').add({
                                     'Product_code': _scanBarcode,
+                                    'product_img': img,
                                     'name': name,
                                     'quantity': quantity.toInt(),
                                     'price': price,
@@ -317,7 +344,149 @@ class _homeState extends State<home> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 10,
+              ),
+              (check)
+                  ? Column(children: [
+                      Text(
+                        "Frequently purchased products",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Container(
+                        height: 140,
+                        width: double.infinity,
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: db.collection('freq_purchase').snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return ListView.builder(
+                                    itemCount: snapshot.data.docs.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      DocumentSnapshot ds =
+                                          snapshot.data.docs[index];
+                                      return Card(
+                                        elevation: 5.0,
+                                        margin: EdgeInsets.all(8.0),
+                                        child: InkWell(
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 5,
+                                              ),
+                                              Container(
+                                                child: Image.network(
+                                                    ds["product_img"],
+                                                    width: 90,
+                                                    height: 60,
+                                                    fit: BoxFit.fill),
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                    child: Text(ds["name"],
+                                                        style: TextStyle(
+                                                            color: HexColor(
+                                                                '#036f7f'),
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            letterSpacing: 2),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                    margin: EdgeInsets.fromLTRB(
+                                                        10.0, 3.0, 10.0, 0.0),
+                                                  ),
+                                                  Container(
+                                                    margin: EdgeInsets.all(0.0),
+                                                    child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            "Price : " +
+                                                                ds["price"]
+                                                                    .toString(),
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .redAccent,
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                letterSpacing:
+                                                                    2),
+                                                          ),
+                                                        ]),
+                                                  ),
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Container(
+                                                        margin:
+                                                            EdgeInsets.fromLTRB(
+                                                                10.0,
+                                                                0.0,
+                                                                10.0,
+                                                                8.0),
+                                                        child: Text(
+                                                          "Product discount(%) : " +
+                                                              ds['discount']
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              color: HexColor(
+                                                                  '#036f7f'),
+                                                              fontSize: 10,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              letterSpacing: 1),
+                                                        )),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          onTap: () {
+                                            showdialog(
+                                                ds["Product_code"],
+                                                ds["product_img"],
+                                                ds["name"],
+                                                ds["price"],
+                                                ds["discount"]);
+                                          },
+                                        ),
+                                      );
+                                    });
+                              } else if (snapshot.hasError) {
+                                return Text("");
+                              } else {
+                                return Text("");
+                              }
+                            }),
+                      ),
+                    ])
+                  : Container(
+                      height: 30,
+                      width: double.infinity,
+                      child: Text(
+                        '  Welcome, ',
+                        style: GoogleFonts.lato(
+                            textStyle: TextStyle(color: HexColor('#036f7f')),
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 4,
+                            wordSpacing: 3,
+                            fontSize: 25.0),
+                      ),
+                    ),
+              SizedBox(
+                height: 10,
               ),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
@@ -385,6 +554,7 @@ class _homeState extends State<home> {
                                                     onPressed: () {
                                                       showdialog(
                                                           ds["Product_code"],
+                                                          ds["product_img"],
                                                           ds["name"],
                                                           ds["price"],
                                                           ds["discount"]);
@@ -435,6 +605,20 @@ class _homeState extends State<home> {
 }
 
 /*
+
+Container(
+                      height: 30,
+                      width: double.infinity,
+                      child: Text(
+                        '  Welcome, ',
+                        style: GoogleFonts.lato(
+                            textStyle: TextStyle(color: HexColor('#036f7f')),
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 4,
+                            wordSpacing: 3,
+                            fontSize: 25.0),
+                      ),
+                    ),
 
 Container(
                   child: IconButton(

@@ -135,7 +135,7 @@ class _checkoutState extends State<checkout> {
     String date = now.toString().substring(0, 16);
     await db.collection("User_products").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
-        //db.collection("History").doc().set(result.data());
+        db.collection("freq_purchase").doc().set(result.data());
         lines.add(result.data());
         //print(result.data());
       });

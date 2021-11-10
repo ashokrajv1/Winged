@@ -153,6 +153,7 @@ class _QrState extends State<Qr> {
     double price;
     double discount;
     var name;
+    String img;
     await db
         .collection('Products')
         .where('Product_code', isEqualTo: _scanBarcode)
@@ -161,6 +162,7 @@ class _QrState extends State<Qr> {
       price = data.docs[0]['price'];
       name = data.docs[0]['name'];
       discount = data.docs[0]['discount'];
+      img = data.docs[0]['product_img'];
       print(price);
     });
     print(price);
@@ -288,6 +290,7 @@ class _QrState extends State<Qr> {
                                 } else if (quantity > 0) {
                                   await db.collection('User_products').add({
                                     'Product_code': _scanBarcode,
+                                    'product_img': img,
                                     'name': name,
                                     'quantity': quantity.toInt(),
                                     'price': price,

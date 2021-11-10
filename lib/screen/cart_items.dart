@@ -229,6 +229,11 @@ class _cartState extends State<cart> {
                                         //leading: Icon(Icons.arrow_left),
                                         subtitle: Text('Quantity : ' +
                                             ds['quantity'].toString()),
+                                        leading: Image.network(
+                                            ds["product_img"],
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.fill),
                                         trailing: Text(
                                           'Rs. ' + summ.toString(),
                                           style: TextStyle(
